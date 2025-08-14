@@ -1,4 +1,4 @@
-import { Task } from '../../models/Task';
+import type { ITask } from '../../models/Task';
 
 export interface Participant {
   device: string;
@@ -6,7 +6,7 @@ export interface Participant {
   country: string;
 }
 
-export function canAssign(task: Task, participant: Participant): boolean {
+export function canAssign(task: ITask, participant: Participant): boolean {
   if (
     task.allowedDevices.length > 0 &&
     !task.allowedDevices.includes(participant.device)

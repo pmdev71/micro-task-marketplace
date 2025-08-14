@@ -1,7 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { Task } from '../../../models/Task';
+import {
+  Category,
+  Subcategory,
+  categoryList,
+  subcategoriesFor,
+} from '@/data/categories';
+
+interface TaskInput {
+  title: string;
+  category: Category;
+  subcategory: Subcategory;
+  allowedDevices: string[];
+  allowedRegions: string[];
+  excludedCountries: string[];
+}
 
 const deviceOptions = ['desktop', 'mobile', 'tablet'];
 const regionOptions = ['NA', 'SA', 'EU', 'AF', 'AS', 'OC'];
@@ -11,6 +25,10 @@ export default function CreateTaskPage() {
   const [allowedDevices, setAllowedDevices] = useState<string[]>([]);
   const [allowedRegions, setAllowedRegions] = useState<string[]>([]);
   const [excludedCountries, setExcludedCountries] = useState<string[]>([]);
+  const [category, setCategory] = useState<Category>(categoryList[0]);
+  const [subcategory, setSubcategory] = useState<Subcategory>(
+    subcategoriesFor(categoryList[0])[0]
+  );
 
   const handleMultiChange = (
     setter: (value: string[]) => void,
@@ -20,17 +38,29 @@ export default function CreateTaskPage() {
     setter(values);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const cat = e.target.value as Category;
+    setCategory(cat);
+    const subs = subcategoriesFor(cat);
+    setSubcategory(subs[0]);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const task: Task = {
-      id: 'temp-id',
+    const task: TaskInput = {
       title: String(formData.get('title') || ''),
+      category,
+      subcategory,
       allowedDevices,
       allowedRegions,
       excludedCountries,
     };
-    console.log('create task', task);
+    await fetch('/api/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(task),
+    });
   };
 
   return (
@@ -40,6 +70,28 @@ export default function CreateTaskPage() {
         placeholder="Task title"
         className="border p-2"
       />
+
+      <label className="font-bold">Category</label>
+      <select value={category} onChange={handleCategoryChange} className="border p-2">
+        {categoryList.map((c) => (
+          <option key={c} value={c}>
+            {c}
+          </option>
+        ))}
+      </select>
+
+      <label className="font-bold">Subcategory</label>
+      <select
+        value={subcategory}
+        onChange={(e) => setSubcategory(e.target.value as Subcategory)}
+        className="border p-2"
+      >
+        {subcategoriesFor(category).map((s) => (
+          <option key={s} value={s}>
+            {s}
+          </option>
+        ))}
+      </select>
 
       <label className="font-bold">Allowed Devices</label>
       <select

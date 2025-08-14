@@ -2,7 +2,14 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, configure the database connection by creating a `.env` file:
+
+```bash
+cp .env.example .env
+# edit .env and set MONGODB_URI
+```
+
+Then run the development server:
 
 ```bash
 npm run dev
@@ -19,6 +26,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## API Endpoints
+
+- `POST /api/register` – register a new user
+- `POST /api/login` – authenticate with existing credentials
+- `GET /api/tasks` – list available tasks
+- `POST /api/tasks` – create a task (title, category, subcategory and optional access lists)
+- `POST /api/tasks/submit` – validate screenshots for a task submission
 
 ## Learn More
 
